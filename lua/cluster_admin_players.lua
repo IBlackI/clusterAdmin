@@ -109,6 +109,9 @@ function cluster_admin_players_add_entry(parent, player, server)
 	if parent["cluster_admin_players_list_entry_" .. player.name] ~= nil then
 		return
 	end
+	if player.name == "undefined" then
+		return
+	end
 	local frame = parent.add { type="frame", name="cluster_admin_players_list_entry_" .. player.name, direction = "horizontal"}
 	frame.style = "dark_frame"
 	frame.style.use_header_filler = false
@@ -300,6 +303,7 @@ function cluster_admin_players_on_player_joined(event)
 		if global.cluster_admin_players.enabled then
 			local button = cluster_admin_add_button(p.name, "player_list")
 			button.caption = "Player manager"
+			cluster_admin_players_update_player_list(p)
 		else 
 			cluster_admin_remove_button(p.name, "player_list")
 		end
