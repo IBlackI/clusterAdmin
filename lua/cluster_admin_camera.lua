@@ -87,6 +87,19 @@ function cluster_admin_camera_gui_clicked(event)
 			if e.name == "cluster_admin_camera_stop" then
 				global.cluster_admin_camera.cameras[p.name .. " " .. e.parent.cluster_admin_camera_target.caption] = nil
 				e.parent.parent.destroy()
+			elseif e.name == "cluster_admin_camera_camera" or e.name == "cluster_admin_camera_target" then
+				local target_name
+				if e.name == "cluster_admin_camera_target" then
+					target_name = e.caption
+				else
+					target_name = e.parent.cluster_admin_camera_header.cluster_admin_camera_target.caption
+				end
+				if target_name ~= nil then
+					local target = game.players[target_name]
+					if target ~= nil and target.connected then
+						p.zoom_to_world(target.position)
+					end
+				end
 			end
 		end
 	end
