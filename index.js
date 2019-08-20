@@ -25,7 +25,8 @@ module.exports = class remoteCommands {
 				let players = await this.getSafeLua("sharedPlugins/clusterAdmin/lua/cluster_admin_players.lua");
 				let camera = await this.getSafeLua("sharedPlugins/clusterAdmin/lua/cluster_admin_camera.lua");
 				let spectate = await this.getSafeLua("sharedPlugins/clusterAdmin/lua/cluster_admin_spectate.lua");
-				let code = mainCode + players + camera + spectate;
+				let boost = await this.getSafeLua("sharedPlugins/clusterAdmin/lua/cluster_admin_boost.lua");
+				let code = mainCode + players + camera + spectate + boost;
 				if(mainCode) var returnValue = await messageInterface(`/silent-command remote.call('hotpatch', 'update', '${pluginConfig.name}', '${pluginConfig.version}', '${code}')`);
 				if(returnValue) console.log(returnValue);
 				this.messageInterface(`/c remote.call('cluster_admin', 'clearPlayers')`);
