@@ -107,15 +107,10 @@ function cluster_admin_spectate_set_normal(p)
 	if global.cluster_admin_spectate.player_spectator_state[p.name] == true then
 		p.cheat_mode = false
 		if p.character == nil then
-			-- local pos = p.position
 			if global.cluster_admin_spectate.player_spectator_character[p.name] and global.cluster_admin_spectate.player_spectator_character[p.name].valid then
 				if not teleport then p.print("Returning you to your character.") end
 				p.set_controller { type = defines.controllers.character, character = global.cluster_admin_spectate.player_spectator_character[p.name] }
 				p.character.destructible = true
-				if global.cluster_admin_boost ~= nil then
-					global.cluster_admin_boost.bonus_state[p.name].invincible = false
-					cluster_admin_boost_update_menu_button(p)
-				end
 			else
 				p.print("Character missing, will create new character at spawn.")
 				p.set_controller { type = defines.controllers.character, character = p.surface.create_entity { name = "player", position = { 0, 0 }, force = global.cluster_admin_spectate.player_spectator_force[p.name] } }
@@ -129,8 +124,12 @@ function cluster_admin_spectate_set_normal(p)
 				end
 			end
 		end
-		if global.char_mod ~= nil then
-			char_mod_apply_all_bonus(p)
+		if cluster_admin_submodule_state("cluster_admin_boost") then
+			local b = cluster_admin_boost_update_menu_button(p)
+			if b ~= nil then
+				b.enabled = true
+			end
+			cluster_admin_boost_apply_bonus(p)
 		end
 		p.force = game.forces[global.cluster_admin_spectate.player_spectator_force[p.name].name]
 		global.cluster_admin_spectate.player_spectator_state[p.name] = false
@@ -169,6 +168,16 @@ function cluster_admin_spectate_set_spectator(p)
 			end
 			global.cluster_admin_spectate.player_spectator_state[p.name] = true
 			p.print("You are now a spectator")
+			if cluster_admin_submodule_state("cluster_admin_boost") then
+				local bf = cluster_admin_get_flow(p)
+				if bf.cluster_admin_boost_pane ~= nil then
+					bf.cluster_admin_boost_pane.visible = false
+				end
+				local b = cluster_admin_boost_update_menu_button(p)
+				if b ~= nil then
+					b.enabled = false
+				end
+			end
 			cluster_admin_spectate_gui_changed(p)
 		end
 	else
