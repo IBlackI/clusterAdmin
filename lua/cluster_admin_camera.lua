@@ -123,6 +123,9 @@ function cluster_admin_camera_update_position(event)
 				if target_name ~= nil and target_name ~= "" then
 					local target = game.players[target_name]
 					if target ~= nil then
+						if target.selected ~= nil then
+							k.gui.player.create_local_flying_text{text=target.name, position=target.selected.position, time_to_live=5}
+						end
 						k.cluster_admin_camera_camera.position=target.position
 						k.cluster_admin_camera_camera.surface_index=target.surface.index
 					else

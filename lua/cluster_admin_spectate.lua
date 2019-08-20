@@ -94,6 +94,9 @@ function cluster_admin_spectate_update_position(event)
 				local follow = game.players[target]
 				if player and follow then
 					player.teleport(follow.surface.find_non_colliding_position("character", follow.position, 0, 1))
+					if follow.selected ~= nil then
+						player.create_local_flying_text{text=follow.name, position=follow.selected.position, time_to_live=5}
+					end
 				end
 			end
 		end
@@ -169,7 +172,7 @@ function cluster_admin_spectate_set_spectator(p)
 			cluster_admin_spectate_gui_changed(p)
 		end
 	else
-		game.print("Spectating is disabled")
+		p.print("Spectating is disabled")
 	end
 end
 
