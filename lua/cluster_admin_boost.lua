@@ -258,7 +258,7 @@ function cluster_admin_boost_gui_clicked(event)
 	end
 end
 
-function cluster_admin_camera_on_gui_value_changed(event)
+function cluster_admin_boost_on_gui_value_changed(event)
 	if not (event and event.element and event.element.valid) then return end
 	local i = event.player_index
 	local p = game.players[i]
