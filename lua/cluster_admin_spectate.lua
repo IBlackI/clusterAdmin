@@ -125,11 +125,32 @@ function cluster_admin_spectate_set_normal(p)
 			end
 		end
 		if cluster_admin_submodule_state("cluster_admin_boost") then
-			local b = cluster_admin_boost_update_menu_button(p)
+			if cluster_admin_submodule_state("cluster_admin_compensate") then
+				if not cluster_admin_compensate_player(p) then
+					local b = cluster_admin_boost_update_menu_button(p)
+					if b ~= nil then
+						b.enabled = true
+					end
+					cluster_admin_boost_apply_bonus(p)
+				end
+				local b = cluster_admin_add_button(p.name, "compensate")
+				if b ~= nil then
+					b.enabled = true
+				end
+			else 
+				local b = cluster_admin_boost_update_menu_button(p)
+				if b ~= nil then
+					b.enabled = true
+				end
+				cluster_admin_boost_apply_bonus(p)
+			end
+		end
+		if cluster_admin_submodule_state("cluster_admin_compensate") then
+			cluster_admin_compensate_player(p)
+			local b = cluster_admin_add_button(p.name, "compensate")
 			if b ~= nil then
 				b.enabled = true
 			end
-			cluster_admin_boost_apply_bonus(p)
 		end
 		p.force = game.forces[global.cluster_admin_spectate.player_spectator_force[p.name].name]
 		global.cluster_admin_spectate.player_spectator_state[p.name] = false
@@ -174,6 +195,12 @@ function cluster_admin_spectate_set_spectator(p)
 					bf.cluster_admin_boost_pane.visible = false
 				end
 				local b = cluster_admin_boost_update_menu_button(p)
+				if b ~= nil then
+					b.enabled = false
+				end
+			end
+			if cluster_admin_submodule_state("cluster_admin_compensate") then
+				local b = cluster_admin_add_button(p.name, "compensate")
 				if b ~= nil then
 					b.enabled = false
 				end
@@ -246,9 +273,9 @@ function cluster_admin_spectate_gui_changed(p)
 			if global.cluster_admin_spectate.player_spectator_state[p.name] == true then
 				local srb = sm.add {type = "button", name = "cluster_admin_spectate_return_button", caption = "Return"}
 				local stb = sm.add {type = "button", name = "cluster_admin_spectate_teleport_button", caption = "Teleport"}
-				srb.style.width = 150
+				srb.style.width = 156
 				srb.style.height = 28
-				stb.style.width = 150
+				stb.style.width = 156
 				if global.cluster_admin_spectate.follow_target[p.name] ~= nil then
 					srb.enabled = false
 					stb.enabled = false
@@ -256,7 +283,7 @@ function cluster_admin_spectate_gui_changed(p)
 			else
 				local ssb = sm.add {type = "button", name = "cluster_admin_spectate_spectate_button", caption = "Start spectating"}
 				ssb.style = "working_weapon_button"
-				ssb.style.width = 150
+				ssb.style.width = 156
 				ssb.style.height = 28
 				ssb.style.horizontal_align = "center"
 			end
@@ -268,7 +295,7 @@ function cluster_admin_spectate_gui_changed(p)
 				local ssfb = sm.add {type = "button", name = "cluster_admin_spectate_stop_follow_button", caption = "Stop following"}
 				ssfb.style = "red_button"
 				ssfb.style.height = 28
-				ssfb.style.width = 150
+				ssfb.style.width = 156
 				ssfb.style.horizontal_align = "center"
 			end
 		else

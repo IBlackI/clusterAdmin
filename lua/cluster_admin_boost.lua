@@ -47,6 +47,7 @@ function cluster_admin_boost_update_menu_button(p)
 				end
 				button.style.width = 144
 				button.style.height = 28
+				cluster_admin_boost_apply_bonus(p)
 				return button
 			end
 		else 
@@ -126,7 +127,7 @@ function cluster_admin_boost_gui_changed(p)
 			b.style.height = 20
 			b.style.padding = 0
 			
-			local s = mabp.add {type = "slider", name = "cluster_admin_boost_walking_slider", minimum_value = -0.95, maximum_value = 10, value = pbs.walking}
+			local s = mabp.add {type = "slider", name = "cluster_admin_boost_walking_slider", minimum_value = -0.95, maximum_value = 10, value_step = 0.25, value = pbs.walking}
 			s.style.width = 150
 			
 		else
@@ -139,6 +140,16 @@ function cluster_admin_boost_gui_changed(p)
 end
 
 function cluster_admin_boost_apply_bonus(p)
+	if cluster_admin_submodule_state("cluster_admin_compensate") then
+		if cluster_admin_compensate_player(p) then
+			return
+		end
+	end
+	
+	if p.character == nil then
+		return
+	end
+	
 	local pbs = global.cluster_admin_boost.bonus_state[p.name]
 	
 	if pbs.pickup then
@@ -172,13 +183,11 @@ function cluster_admin_boost_apply_bonus(p)
 		p["character_reach_distance_bonus"] = 0
 		p["character_resource_reach_distance_bonus"] = 0
 	end
-
-	if p.character ~= nil then
-		if pbs.invincible then
-			p.character.destructible = false
-		else
-			p.character.destructible = true
-		end
+	
+	if pbs.invincible then
+		p.character.destructible = false
+	else
+		p.character.destructible = true
 	end
 	
 	p["character_running_speed_modifier"] = pbs.walking

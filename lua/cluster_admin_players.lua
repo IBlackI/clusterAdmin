@@ -249,6 +249,7 @@ function cluster_admin_players_gui_clicked(event)
 							game.kick_player(target.name)
 						elseif e.name == "cluster_admin_players_label_player_list_ban" then
 							game.ban_player(target.name)
+							print("[CLUSTER_ADMIN] [BAN] " .. target_name .. " [END]")
 							if remote.interfaces["fagc"] ~= nil then
 								if remote.interfaces["fagc"]["createPopup"] then
 									remote.call("fagc", "createPopup", p.name, target.name)
