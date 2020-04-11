@@ -1,0 +1,4 @@
+{
+    "name": "cluster_admin",
+    "load": ["main.lua"]
+}
