@@ -11,6 +11,9 @@ function boost_module.get_menu(cluster_admin, p)
         and menu.boost_flow.valid) then
         return menu.boost_flow
     else
+        if menu ~= nil then
+            menu.destroy()
+        end
         -- Create the outer pane.
         menu = ff.add {type = "frame", name = "boost_menu", caption = "Character Menu", direction = "vertical"}
         menu.style.use_header_filler = false

@@ -38,33 +38,31 @@ function menu_module.update_menu(cluster_admin, p)
     local settings = global.cluster_admin.settings
     menu.clear()
 
-    local boost_button = menu.add {type="button", caption="Boosts", name="boost_button"}
-    local boost_menu_open = cluster_admin.boost.get_menu(cluster_admin, p).parent.visible
-    if boost_menu_open then
-        boost_button.style = "highlighted_tool_button"
-    else
-        boost_button.style = "button"
+    local function create_button(name, caption, active)
+        local button = menu.add {type = "button", name = name, caption = caption}
+        if active then
+            button.style = "highlighted_tool_button"
+        else
+            button.style = "button"
+        end
+        button.style.width = 144
+        button.style.height = 28
+
+        return button
     end
-    boost_button.style.width = 144
-    boost_button.style.height = 28
+
+    local boost_menu_open = cluster_admin.boost.get_menu(cluster_admin, p).parent.visible
+    local boost_button = create_button("boost_button", "Boosts", boost_menu_open)
     boost_button.enabled = settings.boost
 
-    local players_button = menu.add {type="button", caption="Player Manager", name="players_button"}
-    players_button.style = "button"
-    players_button.style.width = 144
-    players_button.style.height = 28
+    local players_menu_open = cluster_admin.players.get_menu(cluster_admin, p).visible
+    local players_button = create_button("players_button", "Player Manager", players_menu_open)
     players_button.enabled = settings.players
 
-    local spectate_button = menu.add {type="button", caption="Specate", name="spectate_button"}
-    spectate_button.style = "button"
-    spectate_button.style.width = 144
-    spectate_button.style.height = 28
+    local spectate_button = create_button("spectate_button", "Specate", true)
     spectate_button.enabled = settings.spectate
 
-    local compensate_button = menu.add {type="button", caption="Compensate", name="compensate_button"}
-    compensate_button.style = "button"
-    compensate_button.style.width = 144
-    compensate_button.style.height = 28
+    local compensate_button = create_button("compensate_button", "Compensate", true)
     compensate_button.enabled = settings.compensate
 end
 
@@ -73,6 +71,11 @@ function menu_module.on_gui_click(cluster_admin, e, p)
         cluster_admin.boost.update_menu(cluster_admin, p)
         local boost_menu = cluster_admin.boost.get_menu(cluster_admin, p)
         boost_menu.parent.visible = not boost_menu.parent.visible
+        cluster_admin.main.update_menu(cluster_admin, p)
+    elseif e.name == "players_button" and e.parent.name == "main_menu_list" then
+        cluster_admin.players.update_menu(cluster_admin, p)
+        local players_menu = cluster_admin.players.get_menu(cluster_admin, p)
+        players_menu.visible = not players_menu.visible
         cluster_admin.main.update_menu(cluster_admin, p)
     end
 end
