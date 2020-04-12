@@ -134,7 +134,8 @@ function players_module.get_menu(cluster_admin, p)
 		end
         pane = ff.add {name = "players_pane", type = "frame", caption = "Player manager", direction = "vertical"}
         pane.style.height = 298
-        pane.style.use_header_filler = false
+		pane.style.use_header_filler = false
+		pane.visible = false
         create_search_frame(pane)
         create_player_list_frame(pane)
         return pane
@@ -196,10 +197,7 @@ function players_module.on_gui_click(cluster_admin, e, p)
 					-- 	cluster_admin_spectate_set_follow_target(p, target)
 					-- end
 				elseif e.name == "player_list_entry_camera" then
-					p.print("camera")
-					-- if cluster_admin_submodule_state("cluster_admin_camera") then
-					-- 	cluster_admin_camera_create(p, target)
-					-- end
+					cluster_admin.camera.create(cluster_admin, p, target)
 				elseif e.name == "player_list_entry_kick" then
 					game.kick_player(target.name)
 				elseif e.name == "player_list_entry_ban" then

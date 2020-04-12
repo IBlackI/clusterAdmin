@@ -3,6 +3,7 @@ local clusterio_api = require("modules/clusterio/api")
 cluster_admin.boost = require("modules/cluster_admin/boost")
 cluster_admin.main = require("modules/cluster_admin/menu")
 cluster_admin.players = require("modules/cluster_admin/players")
+cluster_admin.camera = require("modules/cluster_admin/camera")
 
 --
 --
@@ -15,7 +16,7 @@ function cluster_admin.get_frame_flow(p)
     local flow = mod_gui.get_frame_flow(p).cluster_admin_flow
     if flow ~= nil and flow.valid then
         return flow
-    else 
+    else
         local mgff = mod_gui.get_frame_flow(p)
         flow = mgff.add {type = "flow", name = "cluster_admin_flow", direction = "horizontal"}
         flow.visible = (cluster_admin.get_toggle_button(p).tooltip == "Close Admin Menu")
@@ -51,6 +52,7 @@ function cluster_admin.on_server_startup(event)
         spectate = false,
         compensate = false,
     }
+    global.cluster_admin.cameras = global.cluster_admin.cameras or {}
 end
 
 function cluster_admin.on_player_joined_game(event)
@@ -67,9 +69,6 @@ function cluster_admin.on_player_joined_game(event)
         cluster_admin.main.update_menu(cluster_admin, p)
         cluster_admin.boost.update_menu(cluster_admin, p)
         cluster_admin.players.update_menu(cluster_admin, p)
-    else
-        -- In case someone gets demoted, just destroy the gui.
-        cluster_admin.get_frame_flow(p).destroy()
     end
 end
 
@@ -82,6 +81,7 @@ function cluster_admin.on_gui_click(event)
         boost = true,
         main = true,
         players = true,
+        camera = true,
     }
     local e = event.element
     if e.name == "cluster_admin_toggle_button" then
@@ -108,7 +108,8 @@ function cluster_admin.on_gui_value_changed(event)
         return
     end
     local modules = {
-        boost = true
+        boost = true,
+        camera = true,
     }
 
     for key, _ in pairs(modules) do
@@ -134,12 +135,17 @@ function cluster_admin.on_gui_text_changed(event)
     end
 end
 
+function cluster_admin.on_tick(event)
+    cluster_admin.camera.on_tick(cluster_admin)
+end
+
 return {
     events = {
         [defines.events.on_player_joined_game] = cluster_admin.on_player_joined_game,
         [defines.events.on_gui_click] = cluster_admin.on_gui_click,
         [defines.events.on_gui_value_changed] = cluster_admin.on_gui_value_changed,
         [defines.events.on_gui_text_changed] = cluster_admin.on_gui_text_changed,
+        [defines.events.on_tick] = cluster_admin.on_tick,
         [clusterio_api.events.on_server_startup] = cluster_admin.on_server_startup,
     },
 }
